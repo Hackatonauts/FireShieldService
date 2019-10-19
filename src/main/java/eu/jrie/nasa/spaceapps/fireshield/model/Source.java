@@ -1,8 +1,11 @@
 package eu.jrie.nasa.spaceapps.fireshield.model;
 
 public class Source {
-    private final String type;
-    private final String id;
+    private String type;
+    private String id;
+
+    public Source() {
+    }
 
     public Source(String type, String id) {
         this.type = type;
@@ -13,7 +16,15 @@ public class Source {
         return type;
     }
 
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
