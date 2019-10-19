@@ -15,16 +15,16 @@ public class NotificationService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     private static int ALERT_RADIUS = 5_000_000;
-    private static String ALERT_TEXT = "kupa 1";
+    private static String ALERT_TEXT = "Warning! Fire reported in your area. More information: ";
 
     public NotificationService(UserRepository repository) {
         this.repository = repository;
     }
 
-    void sendFireAlerts(final Position firePosition) {
+    void sendFireAlerts(final Position firePosition, final String fireId) {
         final List<User> users = repository.findAll();
         GeoService.filterByDistance(users.stream(), User::getPosition, firePosition, ALERT_RADIUS)
-                .forEach(u -> sendMessage(u.getFbId(), ALERT_TEXT));
+                .forEach(u -> sendMessage(u.getFbId(), ALERT_TEXT + " http://192.168.137.82:8080//#/fire/" + fireId));
     }
 
     private void sendMessage(final String fbId, final String message) {
