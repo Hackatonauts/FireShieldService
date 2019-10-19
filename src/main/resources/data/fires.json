@@ -1,0 +1,26 @@
+[
+  {
+    "name": "kolo lotniska w Bydgoszczy",
+    "position": {
+      "lat": 53.083969331006266,
+      "lng": 17.9875880957649
+    },
+    "date": "2019-10-19T10:04:43.328Z",
+    "source": {
+      "type": "USER",
+      "id": ""
+    }
+  },
+  {
+    "name": "bg Poznan",
+    "position": {
+      "lat": 52.4052927,
+      "lng": 16.8658895
+    },
+    "date": "2019-09-03T15:14:43.328Z",
+    "source": {
+      "type": "USER",
+      "id": ""
+    }
+  }
+]
