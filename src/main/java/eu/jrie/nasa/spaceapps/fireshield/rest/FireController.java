@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -58,6 +59,11 @@ public class FireController {
         final Fire created = fireService.addFire(fire);
         return ResponseEntity.created(URI.create("fire/" + created.getId()))
                 .body(created);
+    }
+
+    @PutMapping("fire")
+    public ResponseEntity<Fire> putFire(@RequestBody final Fire fire) {
+        return ResponseEntity.ok(fireService.updateFire(fire));
     }
 
 }

@@ -31,30 +31,34 @@ public class FireService {
         return repository.findById(id);
     }
 
-    public Fire addFire(Fire fire) {
+    public Fire addFire(final Fire fire) {
             fire.setPosition(
                     new Position(fire.getPosition().getLat(), fire.getPosition().getLng(), randomArea(fire.getPosition()))
             );
         return repository.insert(fire);
     }
 
+    public Fire updateFire(final Fire fire) {
+        return repository.save(fire);
+    }
+
     private static final Random rand = new Random();
     private static List<List<Position>> randomArea(final Position center) {
         final List<List<Position>> area = new ArrayList<>();
-        final int levels = 2;
-        for (int i = 0; i < levels; i++) {
-            final int v = rand.nextInt(12) + 4;
-            final int step = 360 / v;
-            final List<Position> path = new ArrayList<>();
-            for(int j = 0; j < v; j++) {
-                final double angle = Math.toRadians(360 - (step * j));
-                final double radius = (double)(rand.nextInt(10_000) + 100) / 10_000_000;
-                final double lat = center.getLat() + (radius * Math.sin(angle));
-                final double lng = center.getLng() + (radius * Math.cos(angle));
-                path.add(new Position(lat,  lng));
-            }
-            area.add(path);
+        final int v = rand.nextInt(12) + 4;
+        final int step = 360 / v;
+        final List<Position> path = new ArrayList<>();
+        final List<Position> outerPath = new ArrayList<>();
+        for(int j = 0; j < v; j++) {
+            final double angle = Math.toRadians(360 - (step * j));
+            final double radius = (double)(rand.nextInt(100_000) + 1000) / 10_000_000;
+            final double lat = (radius * Math.sin(angle));
+            final double lng = (radius * Math.cos(angle));
+               path.add(new Position(center.getLat() + lat,  center.getLng() + lng));
+            outerPath.add(new Position(center.getLat() + lat*3,  center.getLng() + lng*3));
         }
+        area.add(path);
+        area.add(outerPath);
         return area;
     }
 }
