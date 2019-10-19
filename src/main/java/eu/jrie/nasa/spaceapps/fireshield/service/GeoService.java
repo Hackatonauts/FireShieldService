@@ -2,8 +2,11 @@ package eu.jrie.nasa.spaceapps.fireshield.service;
 
 import eu.jrie.nasa.spaceapps.fireshield.model.Position;
 
+import java.util.function.Function;
+import java.util.stream.Stream;
+
 class GeoService {
-    static int calculateDistance(final Position a, final Position b) {
+    private static int calculateDistance(final Position a, final Position b) {
         if (a.equals(b)) return 0;
         else {
             final double theta = a.getLng() - b.getLng();
@@ -13,5 +16,11 @@ class GeoService {
             dist = dist * 60 * 1.1515;
             return (int) (dist * 1.609344 * 1000);
         }
+    }
+
+    static <A> Stream<A> filterByDistance(
+            final Stream<A> stream, Function<A, Position> map, final Position position, final int radius
+    ) {
+        return stream.filter(a -> calculateDistance(position, map.apply(a)) <= radius);
     }
 }
