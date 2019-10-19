@@ -32,9 +32,18 @@ public class FireService {
     }
 
     public Fire addFire(final Fire fire) {
+        if(fire.getPosition().getArea() == null) {
             fire.setPosition(
                     new Position(fire.getPosition().getLat(), fire.getPosition().getLng(), randomArea(fire.getPosition()))
             );
+        }
+        else if(fire.getPosition().getArea().size() == 1) {
+            final List<Position> outerPath = new ArrayList<>();
+            for(Position position : fire.getPosition().getArea().get(0)) {
+                outerPath.add(new Position(position.getLat() + .00001, position.getLng() + .00001));
+            }
+            fire.getPosition().getArea().add(outerPath);
+        }
         return repository.insert(fire);
     }
 
@@ -54,8 +63,8 @@ public class FireService {
             final double radius = (double)(rand.nextInt(100_000) + 1000) / 10_000_000;
             final double lat = (radius * Math.sin(angle));
             final double lng = (radius * Math.cos(angle));
-               path.add(new Position(center.getLat() + lat,  center.getLng() + lng));
-            outerPath.add(new Position(center.getLat() + lat*3,  center.getLng() + lng*3));
+            path.add(new Position(center.getLat() + lat, center.getLng() + lng));
+            outerPath.add(new Position(center.getLat() + lat*3, center.getLng() + lng*3));
         }
         area.add(path);
         area.add(outerPath);
