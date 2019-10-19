@@ -1,8 +1,11 @@
 package eu.jrie.nasa.spaceapps.fireshield.model;
 
 public class Position {
-    private final double lat;
-    private final double lng;
+    private double lat;
+    private double lng;
+
+    public Position() {
+    }
 
     public Position(double lat, double lng) {
         this.lat = lat;

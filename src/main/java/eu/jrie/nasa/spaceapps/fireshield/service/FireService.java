@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class FireService {
@@ -17,8 +18,11 @@ public class FireService {
         this.repository = repository;
     }
 
-    public List<Fire> getFires(final Position position, final double radius) {
-        return repository.findAll();
+    public List<Fire> getFires(final Position position, final int radius) {
+        return repository.findAll()
+                .stream()
+                .filter(f -> GeoService.calculateDistance(position, f.getPosition()) <= radius)
+                .collect(Collectors.toList());
     }
 
     public Optional<Fire> getFire(final String id) {
@@ -26,7 +30,7 @@ public class FireService {
     }
 
     public Fire addFire(Fire fire) {
-        return repository.save(fire);
+        return repository.insert(fire);
     }
 
 }
