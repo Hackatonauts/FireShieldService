@@ -12,15 +12,17 @@ public class Fire {
     private Position position;
     private Instant date;
     private Source source;
+    private String status = "open";
 
     public Fire() { }
 
-    public Fire(String id, String name, Position position, Instant date, Source source) {
+    public Fire(String id, String name, Position position, Instant date, Source source, String status) {
         this.id = id;
         this.name = name;
         this.position = position;
         this.date = date;
         this.source = source;
+        this.status = status;
     }
 
     public String getId() {
@@ -61,5 +63,13 @@ public class Fire {
 
     public void setSource(Source source) {
         this.source = source;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
