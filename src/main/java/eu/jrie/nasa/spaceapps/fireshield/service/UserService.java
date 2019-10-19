@@ -21,12 +21,12 @@ public class UserService {
         this.repository = repository;
     }
 
-    @Scheduled(fixedDelay = 1000)
+    @Scheduled(fixedDelay = 5000)
     public void fetchNewUsers() {
         NewUsersMessage newUsers = restTemplate.getForEntity(FB_SERVICE_URL, NewUsersMessage.class).getBody();
         if(newUsers != null) {
             if(newUsers.users.size() > 0) {
-                newUsers.users.forEach(u -> repository.insert(new User(u.psId, "u", u.position, 500_000)));
+                newUsers.users.forEach(u -> repository.insert(new User("u", u.psId, u.position, 500_000)));
                 System.out.println("added new users");
             }
         }

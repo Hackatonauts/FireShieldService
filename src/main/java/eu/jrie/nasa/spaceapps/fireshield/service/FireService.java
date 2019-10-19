@@ -15,9 +15,11 @@ import java.util.stream.Collectors;
 public class FireService {
 
     private final FireRepository repository;
+    private final NotificationService notificationService;
 
-    public FireService(FireRepository repository) {
+    public FireService(FireRepository repository, NotificationService notificationService) {
         this.repository = repository;
+        this.notificationService = notificationService;
     }
 
     public List<Fire> getFires(final Position position, final int radius) {
@@ -39,6 +41,7 @@ public class FireService {
         else if(fire.getPosition().getArea().size() == 1) {
             fire.getPosition().getArea().add(enlargeArea(fire.getPosition().getArea().get(0)));
         }
+        notificationService.sendFireAlerts(fire.getPosition());
         return repository.insert(fire);
     }
 
@@ -65,7 +68,6 @@ public class FireService {
         area.add(outerPath);
         return area;
     }
-
     private static List<Position> enlargeArea(final List<Position> path) {
         final int step = 360 / path.size();
         final List<Position> outerPath = new ArrayList<>();

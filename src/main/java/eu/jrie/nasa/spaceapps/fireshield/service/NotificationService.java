@@ -12,27 +12,26 @@ import java.util.List;
 public class NotificationService {
 
     private UserRepository repository;
+    private final RestTemplate restTemplate = new RestTemplate();
 
-    private static int ALERT_RADIUS = 5_000;
-    private static String ALERT_TEXT = "";
+    private static int ALERT_RADIUS = 5_000_000;
+    private static String ALERT_TEXT = "kupa 1";
 
     public NotificationService(UserRepository repository) {
         this.repository = repository;
     }
 
-    public void sendFireAlerts(final Position firePosition) {
+    void sendFireAlerts(final Position firePosition) {
         final List<User> users = repository.findAll();
         GeoService.filterByDistance(users.stream(), User::getPosition, firePosition, ALERT_RADIUS)
                 .forEach(u -> sendMessage(u.getFbId(), ALERT_TEXT));
-
     }
 
     private void sendMessage(final String fbId, final String message) {
-        final RestTemplate restTemplate = new RestTemplate();
         final SendMessageRequest request = new SendMessageRequest(
-                new SendMessageRequest.Recipient(fbId),
-                new SendMessageRequest.Message(message)
-            );
+            new SendMessageRequest.Recipient(fbId),
+            new SendMessageRequest.Message(message)
+        );
         restTemplate.postForEntity(
                 "https://graph.facebook.com/v4.0/me/messages?access_token=EAAGFr4oCFcIBALB679HLVRmUq781rLMLSMTEDQA3gFQQJxNCHNALbMBLPgNVqBZCM3fIIMAjLg3j0A4eIzzpCpCw0g2T2qTjH7M9fkrRRIAVEHNZCm8XOZCZB3bpe40AGDznZBEwWwdhjPGLZAXRXsAQPsWP9Cqb9nS8PqvSbWSmTnfDT5LIdbVIZC9pqTPnLgZD",
                 request,
@@ -77,12 +76,12 @@ public class NotificationService {
                 this.id = id;
             }
 
-            public String getText() {
+            public String getId() {
                 return id;
             }
 
-            public void setText(String text) {
-                this.id = text;
+            public void setId(String id) {
+                this.id = id;
             }
         }
 
