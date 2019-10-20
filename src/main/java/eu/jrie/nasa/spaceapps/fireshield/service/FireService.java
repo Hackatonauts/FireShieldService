@@ -5,7 +5,11 @@ import eu.jrie.nasa.spaceapps.fireshield.model.Position;
 import eu.jrie.nasa.spaceapps.fireshield.respository.FireRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,7 +44,7 @@ public class FireService {
         }
         
         String message = "There are %d fires in a radius of %d meters. " +
-                (GeoService.calculateDistance(nearestFire.getPosition(), position) < 50000 ? "Please immediately pull the nearest fire alarm pull station as you exit the building.\n" +
+                (GeoService.calculateDistance(nearestFire.getPosition(), position) < 50000 ? "Some of them may be dangerous to you. Please immediately pull the nearest fire alarm pull station as you exit the building.\n" +
                 "When evacuating the building, be sure to feel doors for heat before opening them to be sure there is no fire danger on the other side.\n" +
                 "If there is smoke in the air, stay low to the ground, especially your head, to reduce inhalation exposure. Keep on hand on the wall to prevent disorientation and crawl to the nearest exit.\n" +
                 "Once away and clear from danger, call your report contact and inform them of the fire.\n" +
