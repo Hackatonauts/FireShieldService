@@ -35,7 +35,7 @@ public class ReportService {
     private static int nextImgId = 1;
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     public Report addImage(final String reportId, final MultipartFile image) throws IOException {
-        final String name = "img_" + reportId + "_" + nextImgId++ + ".jpg";
+        final String name = "img_" + reportId    + "_" + nextImgId++ + ".jpg";
         final File imgFile = new File(FileSystemConfig.IMG_PATH + "/" + name);
         image.transferTo(imgFile);
         final Report report = getReport(reportId).get();

@@ -43,15 +43,6 @@ public class ReportController {
                 .body(created);
     }
 
-//    @PostMapping("report/img")
-//    public String handleFileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
-//        storageService.store(file);
-//        redirectAttributes.addFlashAttribute("message",
-//                "You successfully uploaded " + file.getOriginalFilename() + "!");
-//
-//        return "redirect:/";
-//    }
-
     @PostMapping(value = "report/img", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Report> addImage(
             @RequestParam String reportId,
