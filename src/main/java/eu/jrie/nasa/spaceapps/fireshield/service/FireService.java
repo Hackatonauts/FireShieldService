@@ -17,10 +17,12 @@ public class FireService {
 
     private final FireRepository repository;
     private final NotificationService notificationService;
+    private final WeatherService weatherService;
 
-    public FireService(FireRepository repository, NotificationService notificationService) {
+    public FireService(FireRepository repository, NotificationService notificationService, WeatherService weatherService) {
         this.repository = repository;
         this.notificationService = notificationService;
+        this.weatherService = weatherService;
     }
 
     public List<Fire> getFires(final Position position, final int radius) {
@@ -67,6 +69,7 @@ public class FireService {
             fire.getPosition().getArea().add(enlargeArea(fire.getPosition().getArea().get(0)));
         }
         final Fire inserted = repository.insert(fire);
+        weatherService.getWeather(inserted.getPosition(), inserted.getId());
         notificationService.sendFireAlerts(inserted.getPosition(), inserted.getId());
         return inserted;
     }

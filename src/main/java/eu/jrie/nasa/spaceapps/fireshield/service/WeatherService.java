@@ -2,6 +2,7 @@ package eu.jrie.nasa.spaceapps.fireshield.service;
 
 import eu.jrie.nasa.spaceapps.fireshield.model.Position;
 import eu.jrie.nasa.spaceapps.fireshield.model.Weather;
+import eu.jrie.nasa.spaceapps.fireshield.respository.WeatherRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -11,38 +12,44 @@ import java.time.Instant;
 public class WeatherService {
 
     private final RestTemplate restTemplate = new RestTemplate();
+    private final WeatherRepository weatherRepository;
 
     private static final String WEATHER_SERVICE_URL = "http://api.openweathermap.org/data/2.5/weather?lat=%1$,.2f&lon=%2$,.2f&units=metric&APPID=";
     private static final String API_KEY = "5b8eeaa8073590250b89e2805d9677f4";
 
-    public WeatherService() {
-
+    public WeatherService(WeatherRepository weatherRepository) {
+        this.weatherRepository = weatherRepository;
     }
 
-    public Weather getWeather(Position position) {
+    public Weather findWeather(final String fireId) {
+        return weatherRepository.findFirstByFireId(fireId);
+    }
+
+    Weather getWeather(Position position, String fireId) {
         NewWeather newWeather = restTemplate.getForObject(String.format(WEATHER_SERVICE_URL, position.getLat(), position.getLng()) + API_KEY, NewWeather.class);
-        Weather weather = new Weather(newWeather.getId(),
-                newWeather.getName(),
-                newWeather.getMain().getTemp(),
-                newWeather.getWind().getSpeed(),
-                newWeather.getWind().getDeg(),
-                newWeather.getWeather()[0].getMain(),
-                newWeather.getDate());
-        return weather;
+        Weather weather =  new Weather();
+        weather.setName(newWeather.getName());
+        weather.setTemperature(newWeather.getMain().getTemp());
+        weather.setWindSpeed(newWeather.getWind().getSpeed());
+        weather.setWindDegrees(newWeather.getWind().getDeg());
+        weather.setType(newWeather.getWeather()[0].getMain());
+        weather.setDate(newWeather.getDate());
+        weather.setFireId(fireId);
+        return weatherRepository.insert(weather);
     }
 
     private static class NewWeather {
         private WeatherDetails[] weather;
         private MainDetails main;
         private Wind wind;
-        private int id;
+        private String id;
         private String name;
         private Instant date;
 
         public NewWeather() {
         }
 
-        public NewWeather(WeatherDetails[] weather, MainDetails main, int id, String name, Wind wind) {
+        public NewWeather(WeatherDetails[] weather, MainDetails main, String id, String name, Wind wind) {
             this.weather = weather;
             this.main = main;
             this.id = id;
@@ -58,11 +65,11 @@ public class WeatherService {
             this.name = name;
         }
 
-        public int getId() {
+        public String getId() {
             return id;
         }
 
-        public void setId(int id) {
+        public void setId(String id) {
             this.id = id;
         }
 

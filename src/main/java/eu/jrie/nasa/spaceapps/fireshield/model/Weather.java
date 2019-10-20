@@ -7,15 +7,19 @@ import java.time.Instant;
 public class Weather {
 
     @Id
-    private int id;
+    private String id;
     private String name;
     private double temperature;
     private double windSpeed;
     private double windDegrees;
     private String type;
     private Instant date;
+    private String fireId;
 
-    public Weather(int id, String name, double temperature, double windSpeed, double windDegrees, String type, Instant date) {
+    public Weather() {
+    }
+
+    public Weather(String id, String name, double temperature, double windSpeed, double windDegrees, String type, Instant date, String fireId) {
         this.id = id;
         this.name = name;
         this.temperature = temperature;
@@ -23,11 +27,12 @@ public class Weather {
         this.windDegrees = windDegrees;
         this.type = type;
         this.date = date;
+        this.fireId = fireId;
     }
 
-    public int getId() { return id; }
+    public String getId() { return id; }
 
-    public void setId(int id) { this.id = id; }
+    public void setId(String id) { this.id = id; }
 
     public String getName() {
         return name;
@@ -75,5 +80,13 @@ public class Weather {
 
     public void setDate(Instant date) {
         this.date = date;
+    }
+
+    public String getFireId() {
+        return fireId;
+    }
+
+    public void setFireId(String fireId) {
+        this.fireId = fireId;
     }
 }
