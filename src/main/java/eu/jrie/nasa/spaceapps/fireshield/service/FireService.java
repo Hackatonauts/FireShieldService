@@ -28,6 +28,12 @@ public class FireService {
                 .collect(Collectors.toList());
     }
 
+    public List<Fire> getFires(final Position position, final int radius, final String status) {
+        final List<Fire> fires = repository.findAllByStatus(status);
+        return GeoService.filterByDistance(fires.stream(), Fire::getPosition, position, radius)
+                .collect(Collectors.toList());
+    }
+
     public Optional<Fire> getFire(final String id) {
         return repository.findById(id);
     }
