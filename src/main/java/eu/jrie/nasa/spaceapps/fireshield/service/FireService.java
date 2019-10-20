@@ -56,6 +56,13 @@ public class FireService {
         return repository.save(fire);
     }
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    public void closeFire(final String id) {
+        final Fire fire = getFire(id).get();
+        fire.setStatus("closed");
+        updateFire(fire);
+    }
+
     private static final Random rand = new Random();
     private static List<List<Position>> randomArea(final Position center) {
         final List<List<Position>> area = new ArrayList<>();

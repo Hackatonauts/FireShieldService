@@ -42,7 +42,7 @@ public class FireController {
     ) {
         final Position position = new Position(lat, lng);
         final List<Fire> fires = status.equals("all") ?
-                fireService.getFires(position, radius) : fireService.getFires(position, radius, status);
+                fireService.getFires(position, radius) : fireService.getFires(position, radius, status.toLowerCase());
         if(fires.isEmpty()) return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         else return ResponseEntity.ok(new FiresResponse(position, radius, fires.stream()
                 .map(f -> {
@@ -69,6 +69,12 @@ public class FireController {
     @PutMapping("fire")
     public ResponseEntity<Fire> putFire(@RequestBody final Fire fire) {
         return ResponseEntity.ok(fireService.updateFire(fire));
+    }
+
+    @PutMapping("fire/{id}/close")
+    public ResponseEntity<Void> putFireStatus(@PathVariable final String id) {
+        fireService.closeFire(id);
+        return ResponseEntity.ok().build();
     }
 
 }
