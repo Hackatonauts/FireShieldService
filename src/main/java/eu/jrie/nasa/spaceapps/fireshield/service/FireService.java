@@ -41,8 +41,9 @@ public class FireService {
         else if(fire.getPosition().getArea().size() == 1) {
             fire.getPosition().getArea().add(enlargeArea(fire.getPosition().getArea().get(0)));
         }
-        notificationService.sendFireAlerts(fire.getPosition(), fire.getId());
-        return repository.insert(fire);
+        final Fire inserted = repository.insert(fire);
+        notificationService.sendFireAlerts(inserted.getPosition(), inserted.getId());
+        return inserted;
     }
 
     public Fire updateFire(final Fire fire) {
