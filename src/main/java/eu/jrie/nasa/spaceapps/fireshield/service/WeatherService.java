@@ -12,7 +12,7 @@ public class WeatherService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    private static final String WEATHER_SERVICE_URL = "http://api.openweathermap.org/data/2.5/weather?lat=%1$,.2f&lon=%2$,.2f&unit=metric&APPID=";
+    private static final String WEATHER_SERVICE_URL = "http://api.openweathermap.org/data/2.5/weather?lat=%1$,.2f&lon=%2$,.2f&units=metric&APPID=";
     private static final String API_KEY = "5b8eeaa8073590250b89e2805d9677f4";
 
     public WeatherService() {
@@ -23,16 +23,16 @@ public class WeatherService {
         NewWeather newWeather = restTemplate.getForObject(String.format(WEATHER_SERVICE_URL, position.getLat(), position.getLng()) + API_KEY, NewWeather.class);
         Weather weather = new Weather(newWeather.getId(),
                 newWeather.getName(),
-                newWeather.getMainDetails().getTemp(),
+                newWeather.getMain().getTemp(),
                 newWeather.getWind().getSpeed(),
                 newWeather.getWind().getDeg(),
-                newWeather.getWeatherDetails().getMain(),
+                newWeather.getWeather()[0].getMain(),
                 newWeather.getDate());
         return weather;
     }
 
     private static class NewWeather {
-        private WeatherDetails weather;
+        private WeatherDetails[] weather;
         private MainDetails main;
         private Wind wind;
         private int id;
@@ -42,7 +42,7 @@ public class WeatherService {
         public NewWeather() {
         }
 
-        public NewWeather(WeatherDetails weather, MainDetails main, int id, String name, Wind wind) {
+        public NewWeather(WeatherDetails[] weather, MainDetails main, int id, String name, Wind wind) {
             this.weather = weather;
             this.main = main;
             this.id = id;
@@ -66,19 +66,19 @@ public class WeatherService {
             this.id = id;
         }
 
-        public MainDetails getMainDetails() {
+        public MainDetails getMain() {
             return main;
         }
 
-        public void setMainDetails(MainDetails main) {
+        public void setMain(MainDetails main) {
             this.main = main;
         }
 
-        public WeatherDetails getWeatherDetails() {
+        public WeatherDetails[] getWeather() {
             return weather;
         }
 
-        public void setWeatherDetails(WeatherDetails weather) {
+        public void setWeather(WeatherDetails[] weather) {
             this.weather = weather;
         }
 
