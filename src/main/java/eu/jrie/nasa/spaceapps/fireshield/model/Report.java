@@ -2,6 +2,7 @@ package eu.jrie.nasa.spaceapps.fireshield.model;
 
 import org.springframework.data.annotation.Id;
 
+import java.time.Instant;
 import java.util.List;
 
 public class Report {
@@ -12,17 +13,19 @@ public class Report {
     private List<String> images;
     private String user;
     private Position position;
+    private Instant date = Instant.now();
 
     public Report() {
     }
 
-    public Report(String id, String fireId, String description, List<String> images, String user, Position position) {
+    public Report(String id, String fireId, String description, List<String> images, String user, Position position, Instant date) {
         this.id = id;
         this.fireId = fireId;
         this.description = description;
         this.images = images;
         this.user = user;
         this.position = position;
+        this.date = date;
     }
 
     public String getId() {
@@ -71,5 +74,13 @@ public class Report {
 
     public void setPosition(Position position) {
         this.position = position;
+    }
+
+    public Instant getDate() {
+        return date;
+    }
+
+    public void setDate(Instant date) {
+        this.date = date;
     }
 }

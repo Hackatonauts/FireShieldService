@@ -28,6 +28,12 @@ public class FireService {
                 .collect(Collectors.toList());
     }
 
+    public List<Fire> getFires(final Position position, final int radius, final String status) {
+        final List<Fire> fires = repository.findAllByStatus(status);
+        return GeoService.filterByDistance(fires.stream(), Fire::getPosition, position, radius)
+                .collect(Collectors.toList());
+    }
+
     public Optional<Fire> getFire(final String id) {
         return repository.findById(id);
     }
@@ -41,12 +47,20 @@ public class FireService {
         else if(fire.getPosition().getArea().size() == 1) {
             fire.getPosition().getArea().add(enlargeArea(fire.getPosition().getArea().get(0)));
         }
-        notificationService.sendFireAlerts(fire.getPosition());
-        return repository.insert(fire);
+        final Fire inserted = repository.insert(fire);
+        notificationService.sendFireAlerts(inserted.getPosition(), inserted.getId());
+        return inserted;
     }
 
     public Fire updateFire(final Fire fire) {
         return repository.save(fire);
+    }
+
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    public void closeFire(final String id) {
+        final Fire fire = getFire(id).get();
+        fire.setStatus("closed");
+        updateFire(fire);
     }
 
     private static final Random rand = new Random();
