@@ -6,7 +6,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 class GeoService {
-    private static int calculateDistance(final Position a, final Position b) {
+    public static int calculateDistance(final Position a, final Position b) {
         if (a.equals(b)) return 0;
         else {
             final double theta = a.getLng() - b.getLng();
