@@ -43,8 +43,10 @@ public class FireController {
         final Position position = new Position(lat, lng);
         final List<Fire> fires = status.equals("all") ?
                 fireService.getFires(position, radius) : fireService.getFires(position, radius, status.toLowerCase());
+
+
         if(fires.isEmpty()) return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        else return ResponseEntity.ok(new FiresResponse(position, radius, fires.stream()
+        return ResponseEntity.ok(new FiresResponse(position, radius, fireService.getVoiceMessageUrl(fires, radius, position), fires.stream()
                 .map(f -> {
                     FireModel fireModel = new FireModel(f);
                     fireModel.add(WebMvcLinkBuilder.linkTo(methodOn(FireController.class).getFire(f.getId())).withSelfRel());

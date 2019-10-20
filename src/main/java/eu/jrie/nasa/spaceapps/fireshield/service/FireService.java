@@ -5,10 +5,7 @@ import eu.jrie.nasa.spaceapps.fireshield.model.Position;
 import eu.jrie.nasa.spaceapps.fireshield.respository.FireRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +29,24 @@ public class FireService {
         final List<Fire> fires = repository.findAllByStatus(status);
         return GeoService.filterByDistance(fires.stream(), Fire::getPosition, position, radius)
                 .collect(Collectors.toList());
+    }
+
+    public String getVoiceMessageUrl(List<Fire> fires, int radius, Position position) {
+        final String responsiveVoiceUrl = "https://code.responsivevoice.org/getvoice.php?t=%s&tl=en_US";
+
+        Fire nearestFire = fires.stream().min(Comparator.comparingInt(f -> GeoService.calculateDistance(f.getPosition(), position))).orElse(null);
+        if (nearestFire == null) {
+            return String.format(responsiveVoiceUrl, "There are no fires around you");
+        }
+        
+        String message = "There are %d fires in a radius of %d meters. " +
+                (GeoService.calculateDistance(nearestFire.getPosition(), position) < 50000 ? "Please immediately pull the nearest fire alarm pull station as you exit the building.\n" +
+                "When evacuating the building, be sure to feel doors for heat before opening them to be sure there is no fire danger on the other side.\n" +
+                "If there is smoke in the air, stay low to the ground, especially your head, to reduce inhalation exposure. Keep on hand on the wall to prevent disorientation and crawl to the nearest exit.\n" +
+                "Once away and clear from danger, call your report contact and inform them of the fire.\n" +
+                "Go to your refuge area and await further instructions from emergency personnel." : "");
+
+        return String.format(responsiveVoiceUrl, String.format(message, fires.size(), radius));
     }
 
     public Optional<Fire> getFire(final String id) {
