@@ -14,17 +14,21 @@ public class NotificationService {
     private UserRepository repository;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    private static int ALERT_RADIUS = 5_000_000;
-    private static String ALERT_TEXT = "kupa 1";
+    private static final int ALERT_RADIUS = 5_000_000;
+    private static final String ALERT_TEXT = "Warning! Fire reported in your area. More information: ";
+    private static final String ALERT_URL = "http://192.168.137.82:8080//#/fire/";
+
+    private static final String FB_URL = "https://graph.facebook.com/v4.0/me/messages";
+    private static final String FB_TOKEN = "?access_token=EAAGFr4oCFcIBALB679HLVRmUq781rLMLSMTEDQA3gFQQJxNCHNALbMBLPgNVqBZCM3fIIMAjLg3j0A4eIzzpCpCw0g2T2qTjH7M9fkrRRIAVEHNZCm8XOZCZB3bpe40AGDznZBEwWwdhjPGLZAXRXsAQPsWP9Cqb9nS8PqvSbWSmTnfDT5LIdbVIZC9pqTPnLgZD";
 
     public NotificationService(UserRepository repository) {
         this.repository = repository;
     }
 
-    void sendFireAlerts(final Position firePosition) {
+    void sendFireAlerts(final Position firePosition, final String fireId) {
         final List<User> users = repository.findAll();
         GeoService.filterByDistance(users.stream(), User::getPosition, firePosition, ALERT_RADIUS)
-                .forEach(u -> sendMessage(u.getFbId(), ALERT_TEXT));
+                .forEach(u -> sendMessage(u.getFbId(), ALERT_TEXT + ALERT_URL + fireId));
     }
 
     private void sendMessage(final String fbId, final String message) {
@@ -33,7 +37,7 @@ public class NotificationService {
             new SendMessageRequest.Message(message)
         );
         restTemplate.postForEntity(
-                "https://graph.facebook.com/v4.0/me/messages?access_token=EAAGFr4oCFcIBALB679HLVRmUq781rLMLSMTEDQA3gFQQJxNCHNALbMBLPgNVqBZCM3fIIMAjLg3j0A4eIzzpCpCw0g2T2qTjH7M9fkrRRIAVEHNZCm8XOZCZB3bpe40AGDznZBEwWwdhjPGLZAXRXsAQPsWP9Cqb9nS8PqvSbWSmTnfDT5LIdbVIZC9pqTPnLgZD",
+                FB_URL + FB_TOKEN,
                 request,
                 String.class
         );
@@ -47,7 +51,7 @@ public class NotificationService {
         public SendMessageRequest() {
         }
 
-        public SendMessageRequest(Recipient recipient, Message message) {
+        SendMessageRequest(Recipient recipient, Message message) {
             this.recipient = recipient;
             this.message = message;
         }
@@ -72,7 +76,7 @@ public class NotificationService {
             private String id;
 
             public Recipient() {}
-            public Recipient(String id) {
+            Recipient(String id) {
                 this.id = id;
             }
 
@@ -89,7 +93,7 @@ public class NotificationService {
             private String text;
 
             public Message() {}
-            public Message(String text) {
+            Message(String text) {
                 this.text = text;
             }
 
