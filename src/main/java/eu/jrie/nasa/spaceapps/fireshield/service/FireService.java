@@ -15,15 +15,22 @@ import java.util.stream.Collectors;
 public class FireService {
 
     private final FireRepository repository;
+    private final NotificationService notificationService;
 
-    public FireService(FireRepository repository) {
+    public FireService(FireRepository repository, NotificationService notificationService) {
         this.repository = repository;
+        this.notificationService = notificationService;
     }
 
     public List<Fire> getFires(final Position position, final int radius) {
-        return repository.findAll()
-                .stream()
-                .filter(f -> GeoService.calculateDistance(position, f.getPosition()) <= radius)
+        final List<Fire> fires = repository.findAll();
+        return GeoService.filterByDistance(fires.stream(), Fire::getPosition, position, radius)
+                .collect(Collectors.toList());
+    }
+
+    public List<Fire> getFires(final Position position, final int radius, final String status) {
+        final List<Fire> fires = repository.findAllByStatus(status);
+        return GeoService.filterByDistance(fires.stream(), Fire::getPosition, position, radius)
                 .collect(Collectors.toList());
     }
 
@@ -38,17 +45,22 @@ public class FireService {
             );
         }
         else if(fire.getPosition().getArea().size() == 1) {
-            final List<Position> outerPath = new ArrayList<>();
-            for(Position position : fire.getPosition().getArea().get(0)) {
-                outerPath.add(new Position(position.getLat() + .00001, position.getLng() + .00001));
-            }
-            fire.getPosition().getArea().add(outerPath);
+            fire.getPosition().getArea().add(enlargeArea(fire.getPosition().getArea().get(0)));
         }
-        return repository.insert(fire);
+        final Fire inserted = repository.insert(fire);
+        notificationService.sendFireAlerts(inserted.getPosition(), inserted.getId());
+        return inserted;
     }
 
     public Fire updateFire(final Fire fire) {
         return repository.save(fire);
+    }
+
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    public void closeFire(final String id) {
+        final Fire fire = getFire(id).get();
+        fire.setStatus("closed");
+        updateFire(fire);
     }
 
     private static final Random rand = new Random();
@@ -69,5 +81,19 @@ public class FireService {
         area.add(path);
         area.add(outerPath);
         return area;
+    }
+    private static List<Position> enlargeArea(final List<Position> path) {
+        final int step = 360 / path.size();
+        final List<Position> outerPath = new ArrayList<>();
+        for(int j = 0; j < path.size(); j++) {
+            final double angle = Math.toRadians(360 - (step * j));
+            outerPath.add(
+                    new Position(
+                            path.get(j).getLat() + .008*Math.signum(Math.sin(angle)),
+                            path.get(j).getLng() + .008*Math.signum(Math.cos(angle))
+                    )
+            );
+        }
+        return outerPath;
     }
 }

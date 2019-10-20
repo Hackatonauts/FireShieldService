@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
@@ -35,9 +36,13 @@ public class FireController {
     }
 
     @GetMapping("fires")
-    public ResponseEntity<FiresResponse> getFires(final double lat, final double lng, final int radius) {
+    public ResponseEntity<FiresResponse> getFires(
+            @RequestParam final double lat, @RequestParam final double lng, @RequestParam final int radius,
+            @RequestParam(required = false, defaultValue = "all") final String status
+    ) {
         final Position position = new Position(lat, lng);
-        final List<Fire> fires = fireService.getFires(position, radius);
+        final List<Fire> fires = status.equals("all") ?
+                fireService.getFires(position, radius) : fireService.getFires(position, radius, status.toLowerCase());
         if(fires.isEmpty()) return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         else return ResponseEntity.ok(new FiresResponse(position, radius, fires.stream()
                 .map(f -> {
@@ -64,6 +69,12 @@ public class FireController {
     @PutMapping("fire")
     public ResponseEntity<Fire> putFire(@RequestBody final Fire fire) {
         return ResponseEntity.ok(fireService.updateFire(fire));
+    }
+
+    @PutMapping("fire/{id}/close")
+    public ResponseEntity<Void> putFireStatus(@PathVariable final String id) {
+        fireService.closeFire(id);
+        return ResponseEntity.ok().build();
     }
 
 }
