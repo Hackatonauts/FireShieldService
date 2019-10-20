@@ -27,4 +27,8 @@ public class ReportService {
     public Report addReport(final Report report) {
         return repository.insert(report);
     }
+
+//    public Report addImage(final String reportId, final Byte[] image) {
+//
+//    }
 }
